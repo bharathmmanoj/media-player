@@ -1,7 +1,26 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { deleteHistory, getHistory } from '../services/allAPI'
+import { Button } from 'react-bootstrap'
 
 function Watchhistory() {
+    const [history, setHistory] = useState([])  
+    const [deleteHistoryItem, setDeleteHistory] = useState(false)
+    const getAllHistory = async() =>{
+        const response = await getHistory();
+        console.log("history data")
+        console.log(response)
+        setHistory(response.data);
+    }
+    useEffect(()=>{
+        getAllHistory();
+        setDeleteHistory(false)
+    },[deleteHistoryItem])
+
+    const handleDelete = async(id)=>{
+       const result = await deleteHistory(id)
+       setDeleteHistory(true)
+   }   
   return (
     <>
     <div className='container mt-5 d-flex justify-content-between align-item-center mb-5'>
@@ -15,19 +34,32 @@ function Watchhistory() {
                 <th>Caption</th>
                 <th>URL</th>
                 <th>Time</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>1</td>
-                <td>Pathan</td>
-                <td>http://www.youtube.com/pathan/video/1</td>
-                <td>6/12/2023</td>
-            </tr>
+            {
+                history.length>0?
+                history.map((item)=>(
+                    <tr>
+                    <td>{item.id}</td>
+                    <td>{item.caption}</td>
+                    <td>{item.embededLink}</td>
+                    <td>{item.timeStamp}</td>
+                    <td>  <Button variant="danger" onClick={()=>handleDelete(item.id)}>
+                            <i class="fa-solid fa-trash"></i>
+                             </Button></td>
+                </tr>
+                )):
+                
+                <p>No item to display</p>
+            }
+           
         </tbody>
     </table>
     </>
   )
 }
+
 
 export default Watchhistory

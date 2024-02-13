@@ -4,8 +4,9 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form  from 'react-bootstrap/Form';
 import {uploadAllVideo} from '../services/allAPI'
-
-function Add() {
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+function Add({setUploadVideoStatus}) {
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
@@ -28,14 +29,18 @@ function Add() {
     const handleUpload = async() =>{
       const {id,caption,url,embededLink} =video;
       if(!id||!caption||!url||!embededLink){
-        alert("please fill the form completly");
+        toast.warning("please fill the form completly")
       }
       else{
         const response = await uploadAllVideo(video)
         console.log(response)
-        if(response.statue = 201){
-          alert(`${response.data.caption} is succesfully uploaded`)
+        if(response.status = 201){
+          toast.success(`${response.data.caption} is succesfully uploaded`)
+          setUploadVideoStatus(response.data)
           handleClose();
+        }
+        else{
+          toast.error("something went wrong")
         }
       }
     }
@@ -81,6 +86,7 @@ function Add() {
             Upload</Button>
         </Modal.Footer>
       </Modal>
+      <ToastContainer position='top-center' theme='colored' autoClose={2000} ></ToastContainer>
     </>
   )
 }
